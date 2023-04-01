@@ -10,21 +10,24 @@
 
 #include "block.h"
 
-namespace utils {
+namespace utils
+{
     std::string MyHash(const std::string &);
 
     std::string IntToHex(int64_t);
 
-    bool OpenDB(leveldb::DB *, const std::string &);
+    // void OpenDB(leveldb::DB *, const std::string &);
 
-    leveldb::DB* Open(const std::string &);
+    leveldb::DB *OpenDB(const std::string &);
 
-    bool StoreData(leveldb::DB *, const std::string &, const std::string &);
+    void StoreData(leveldb::DB *, const std::string &, const std::string &);
 
-    bool LoadData(leveldb::DB *, const std::string &, std::string);
+    void LoadData(leveldb::DB *, const std::string &, std::string *);
 
     std::string Serialize(BLOCK *);
 
     BLOCK *Deserialize(std::string &);
+
+    void Assert(bool, std::string);
 }
-#endif //JRCHAIN_UTILS_H
+#endif // JRCHAIN_UTILS_H

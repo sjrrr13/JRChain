@@ -45,62 +45,42 @@ namespace utils
         return ss.str();
     }
 
-    bool OpenDB(leveldb::DB *db, const std::string &db_path)
-    {
-        leveldb::Options options;
-        options.create_if_missing = true;
-        leveldb::Status status = leveldb::DB::Open(options, db_path, &db);
+    // void OpenDB(leveldb::DB *db, const std::string &db_path)
+    // {
+    //     leveldb::Options options;
+    //     options.create_if_missing = true;
+    //     leveldb::Status status = leveldb::DB::Open(options, db_path, &db);
 
-        assert(status.ok());
+    //     Assert(status.ok(), "Error opening database.");
+    // }
 
-        if (!status.ok())
-        {
-            std::cout << "Error opening database." << std::endl;
-            return false;
-        }
-        return true;
-    }
-
-    leveldb::DB* Open(const std::string &db_path)
+    leveldb::DB *OpenDB(const std::string &db_path)
     {
         leveldb::DB *db;
         leveldb::Options options;
         options.create_if_missing = true;
         leveldb::Status status = leveldb::DB::Open(options, db_path, &db);
 
-        assert(status.ok());
+        Assert(status.ok(), "Error opening database.");
 
         return db;
     }
 
-    bool StoreData(leveldb::DB *db, const std::string &key, const std::string &value)
+    void StoreData(leveldb::DB *db, const std::string &key, const std::string &value)
     {
-        std::cout << "key is " << key << "; value is " << value << std::endl;
+        // std::cout << "Start to store, key is " << key << ", data is " << value << std::endl;
         leveldb::Status status = db->Put(leveldb::WriteOptions(), key, value);
-        std::cout << "status done." << std::endl;
-
-        assert(status.ok());
-
-        if (!status.ok())
-        {
-            std::cout << "Error writing data to database." << std::endl;
-            return false;
-        }
-        return true;
+        // std::cout << status.ToString() << std::endl;
+        Assert(status.ok(), "Error writing data to database.");
     }
 
-    bool LoadData(leveldb::DB *db, const std::string &key, std::string value)
+    void LoadData(leveldb::DB *db, const std::string &key, std::string *value)
     {
-        leveldb::Status status = db->Get(leveldb::ReadOptions(), key, &value);
+        leveldb::Status status = db->Get(leveldb::ReadOptions(), key, value);
+        if (status.IsNotFound())
+            return;
 
-        assert(status.ok());
-
-        if (!status.ok())
-        {
-            std::cout << "Error reading " << key << " from database." << std::endl;
-            return false;
-        }
-        return true;
+        Assert(status.ok(), "Error reading " + key + " from database.");
     }
 
     std::string Serialize(BLOCK *b)
@@ -110,6 +90,7 @@ namespace utils
             std::cout << "NULL BLOCK" << std::endl;
             return "";
         }
+        // std::cout << "serializing, ph is " << b->get_prev_hash() << std::endl;
         std::string data;
         data += T_KEY + std::to_string(b->get_timestamp());
         data += PH_KEY + b->get_prev_hash();
@@ -136,15 +117,28 @@ namespace utils
         }
 
         long long t = 0;
-        std::istringstream is_t(data.substr(t_index + T_KEY_LEN - 1, ph_index - t_index - T_KEY_LEN));
+        std::istringstream is_t(data.substr(t_index + T_KEY_LEN, ph_index - t_index - T_KEY_LEN));
         is_t >> t;
-        std::string ph = data.substr(ph_index + PH_KEY_LEN - 1, h_index - ph_index - PH_KEY_LEN);
-        std::string h = data.substr(h_index + H_KEY_LEN - 1, d_index - h_index - H_KEY_LEN);
-        std::string d = data.substr(d_index + D_KEY_LEN - 1, n_index - d_index - D_KEY_LEN);
+        
+        std::string ph = data.substr(ph_index + PH_KEY_LEN, h_index - ph_index - PH_KEY_LEN);
+        
+        std::string h = data.substr(h_index + H_KEY_LEN, d_index - h_index - H_KEY_LEN);
+        
+        std::string d = data.substr(d_index + D_KEY_LEN, n_index - d_index - D_KEY_LEN);
+        
         int n = 0;
-        std::istringstream is_n(data.substr(n_index + N_KEY_LEN - 1, data.length() - n_index - N_KEY_LEN));
+        std::istringstream is_n(data.substr(n_index + N_KEY_LEN, data.length() - n_index - N_KEY_LEN));
         is_n >> n;
 
         return new BLOCK(t, ph, h, d, n);
+    }
+
+    void Assert(bool flag, std::string msg)
+    {
+        if (!flag)
+        {
+            std::cout << msg << std::endl;
+            exit(-1);
+        }
     }
 }

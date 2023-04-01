@@ -34,7 +34,7 @@ public:
 
     int get_nonce() const;
 
-    std::string Serialize() const;
+    // std::string Serialize() const;
 };
 
 namespace block {

@@ -1,57 +1,68 @@
 #include "blockchain.h"
 #include "utils.h"
 
-int main()
+void db()
 {
-    // leveldb::DB *db;
     leveldb::Options options;
     options.create_if_missing = true;
 
     // open
-    leveldb::DB *db = utils::Open("/Users/sjrrr/Fudan/Study/Blockchain/JRChain/resource/test");
+    leveldb::DB *db = utils::OpenDB("/Users/sjrrr/Fudan/Study/Blockchain/JRChain/resource/jr_db");
     // leveldb::Status status = leveldb::DB::Open(options, "/Users/sjrrr/Fudan/Study/Blockchain/JRChain/resource/test", &db);
     // assert(status.ok());
 
-    std::string key = "keytest";
-    std::string value = "this is the value of keytest";
+    leveldb::Iterator *it = db->NewIterator(leveldb::ReadOptions());
+    for (it->SeekToFirst(); it->Valid(); it->Next())
+    {
+        // std::cout << it->key().ToString() << ": "  << it->value().ToString() << std::endl;
+        leveldb::Status status4 = db->Delete(leveldb::WriteOptions(), it->key().ToString());
+        assert(status4.ok());
+    }
+    assert(it->status().ok()); // Check for any errors found during the scan
+    delete it;
 
-    // write
-    utils::StoreData(db, key, value);
-    // leveldb::Status status2 = db->Put(leveldb::WriteOptions(), key, value);
-    // assert(status2.ok());
+    // auto tip = "000a5139656cd6d0bf503cdd95550030b5f35a6a687f0a66e116652f5df865d6";
+    // auto *block = new BLOCK(tip, "Send 1 BTC to SJR");
+    // auto k = block->get_hash();
+    // auto v = utils::Serialize(block);
 
-    // read
-    leveldb::Status status3 = db->Get(leveldb::ReadOptions(), key, &value);
-    assert(status3.ok());
+    // // write
+    // utils::StoreData(db, k, v);
+    // // leveldb::Status status2 = db->Put(leveldb::WriteOptions(), key, value);
+    // // std::cout << status2.ToString() << std::endl;
+    // // assert(status2.ok());
 
-    std::cout << "value of " << key << " is " << value << std::endl;
+    // // read
+    // leveldb::Status status3 = db->Get(leveldb::ReadOptions(), k, &v);
+    // assert(status3.ok());
+    // std::cout << "value of " << k << " is " << v << std::endl;
 
-    // delete
-    leveldb::Status status4 = db->Delete(leveldb::WriteOptions(), key);
-    assert(status4.ok());
+    // // delete
+    // leveldb::Status status4 = db->Delete(leveldb::WriteOptions(), k);
+    // assert(status4.ok());
 
-    leveldb::Status status5 = db->Get(leveldb::ReadOptions(), key, &value);
-    assert(!status5.ok());
+    // leveldb::Status status5 = db->Get(leveldb::ReadOptions(), k, &v);
+    // assert(status5.IsNotFound());
 
     // close
     delete db;
+}
 
-    // leveldb::DB *db;
-    // std::string db_path = "/Users/sjrrr/Fudan/Study/Blockchain/JRChain/resource/test";
-    // std::cout << utils::OpenDB(db, db_path) << std::endl;
-    // std::string k = "0";
-    // std::string v = "1";
-    // leveldb::Status status = db->Put(leveldb::WriteOptions(), k, v);
-    // assert(status.ok());
-    //    std::cout << utils::StoreData(db, "00000f9a89ee0a9f9fadcfd5e89a38e0dd2f35e6960b82e86fbe1b02a267f560",
-    //    "&T&1678723824562&PH&&H&00000f9a89ee0a9f9fadcfd5e89a38e0dd2f35e6960b82e86fbe1b02a267f560") << std::endl;
+void test()
+{
+    CBlockchain blockchain = CBlockchain();
 
-    // CBlockchain blockchain = CBlockchain();
+    blockchain.AddBlock("Send 1 BTC to SJR");
+    blockchain.AddBlock("Send 2 more BTC to SJR");
 
-    // blockchain.AddBlock("Send 1 BTC to SJR");
-    // blockchain.AddBlock("Send 2 more BTC to SJR");
+    blockchain.Show();
+}
 
-    // blockchain.Show();
+int main()
+{
+    db();
+
+    test();
 
     return 0;
 }

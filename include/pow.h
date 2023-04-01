@@ -10,7 +10,7 @@
 
 class CProofOfWork {
 private:
-    static const int target_bits = 4;
+    static const int target_bits = 2;
     static const int all_bits = 64;
     static const int max_nonce = INT_MAX;
     static std::string target;
