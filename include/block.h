@@ -33,8 +33,6 @@ public:
     std::int64_t get_timestamp() const;
 
     int get_nonce() const;
-
-    // std::string Serialize() const;
 };
 
 namespace block {

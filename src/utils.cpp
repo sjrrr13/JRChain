@@ -45,15 +45,6 @@ namespace utils
         return ss.str();
     }
 
-    // void OpenDB(leveldb::DB *db, const std::string &db_path)
-    // {
-    //     leveldb::Options options;
-    //     options.create_if_missing = true;
-    //     leveldb::Status status = leveldb::DB::Open(options, db_path, &db);
-
-    //     Assert(status.ok(), "Error opening database.");
-    // }
-
     leveldb::DB *OpenDB(const std::string &db_path)
     {
         leveldb::DB *db;
@@ -68,9 +59,7 @@ namespace utils
 
     void StoreData(leveldb::DB *db, const std::string &key, const std::string &value)
     {
-        // std::cout << "Start to store, key is " << key << ", data is " << value << std::endl;
         leveldb::Status status = db->Put(leveldb::WriteOptions(), key, value);
-        // std::cout << status.ToString() << std::endl;
         Assert(status.ok(), "Error writing data to database.");
     }
 
@@ -90,7 +79,6 @@ namespace utils
             std::cout << "NULL BLOCK" << std::endl;
             return "";
         }
-        // std::cout << "serializing, ph is " << b->get_prev_hash() << std::endl;
         std::string data;
         data += T_KEY + std::to_string(b->get_timestamp());
         data += PH_KEY + b->get_prev_hash();
@@ -101,7 +89,6 @@ namespace utils
         return data;
     }
 
-    // &T&123&PH&
     BLOCK *Deserialize(std::string &data)
     {
         int t_index = data.find(T_KEY);

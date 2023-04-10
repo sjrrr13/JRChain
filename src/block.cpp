@@ -11,8 +11,6 @@
 BLOCK::BLOCK(std::string ph, std::string d) :
         prev_hash(std::move(ph)),
         data(std::move(d)) {
-    // std::cout << "mining block, ph is " << ph << std::endl;
-    // std::cout << "mined block, prev_h is " << prev_hash << std::endl;
     set_timestamp();
     set_hash();
 }
@@ -57,10 +55,6 @@ std::int64_t BLOCK::get_timestamp() const {
 int BLOCK::get_nonce() const {
     return nonce;
 }
-
-// std::string BLOCK::Serialize() const {
-//     return "";
-// }
 
 BLOCK *block::NewGenesisBlock() {
     return new BLOCK("", "New Genesis Block");

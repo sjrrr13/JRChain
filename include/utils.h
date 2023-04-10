@@ -16,8 +16,6 @@ namespace utils
 
     std::string IntToHex(int64_t);
 
-    // void OpenDB(leveldb::DB *, const std::string &);
-
     leveldb::DB *OpenDB(const std::string &);
 
     void StoreData(leveldb::DB *, const std::string &, const std::string &);
